@@ -1,0 +1,35 @@
+{
+  "name": "mentorlagbe-server",
+  "version": "1.0.0",
+  "description": "Backend API for MentorLagbe - Smart Tuition & Mentorship Platform",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "mentorlagbe",
+    "tuition",
+    "mentorship"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "better-auth": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.3.0",
+    "jose": "^6.2.15",
+    "mongodb": "^7.8.0",
+    "stripe": "^22.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.0"
+  }
+}
