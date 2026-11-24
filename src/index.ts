@@ -19,17 +19,44 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
-// Get Approved and Active Tuitions
+// Get Approved and Active Tuitions with Search and Filters
 app.get('/tuitions', async (req: Request, res: Response) => {
   try {
+    const search = String(req.query.search || '').trim();
+    const subject = String(req.query.subject || '').trim();
+    const classLevel = String(req.query.classLevel || '').trim();
+    const mode = String(req.query.mode || '').trim();
     const limit = Number(req.query.limit);
+
+    const filters: Record<string, unknown> = {
+      approvalStatus: 'approved',
+      isActive: true,
+    };
+
+    if (search) {
+      const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      filters.$or = [
+        { title: { $regex: safeSearch, $options: 'i' } },
+        { subject: { $regex: safeSearch, $options: 'i' } },
+      ];
+    }
+
+    if (subject) {
+      filters.subject = subject;
+    }
+
+    if (classLevel) {
+      filters.classLevel = classLevel;
+    }
+
+    if (mode) {
+      filters.mode = mode;
+    }
 
     let query = getDB()
       .collection('tuitions')
-      .find({
-        approvalStatus: 'approved',
-        isActive: true,
-      })
+      .find(filters)
       .sort({ createdAt: -1 });
 
     if (Number.isInteger(limit) && limit > 0) {
