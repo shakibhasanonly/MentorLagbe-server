@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { ObjectId } from 'mongodb';
 import { connectDB, getDB } from './config/db';
 
 dotenv.config();
@@ -80,6 +81,52 @@ app.get('/tuitions', async (req: Request, res: Response) => {
   }
 });
 
+// Get Single Tuition Details by ID
+app.get('/tuitions/:id', async (req: Request, res: Response) => {
+  try {
+    const paramId = req.params.id;
+    const id = Array.isArray(paramId) ? paramId[0] : paramId;
+
+    if (!id || !ObjectId.isValid(id)) {
+      res.status(400).json({
+        success: false,
+        message: 'Invalid tuition ID',
+      });
+      return;
+    }
+
+    const tuition = await getDB()
+      .collection('tuitions')
+      .findOne({
+        _id: new ObjectId(id),
+        approvalStatus: 'approved',
+        isActive: true,
+      });
+
+    if (!tuition) {
+      res.status(404).json({
+        success: false,
+        message: 'Tuition not found',
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Tuition details fetched successfully',
+      data: tuition,
+    });
+  } catch (error) {
+    console.error('Failed to fetch tuition details:', error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch tuition details',
+    });
+  }
+});
+
+// Start Server
 const startServer = async () => {
   try {
     await connectDB();
